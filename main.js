@@ -78,6 +78,103 @@ function addNewCategory() {
 }
 document.getElementById('addCategoryButton').addEventListener('click', addNewCategory);
 
+function addShipment() {
+    let categoryInput = document.getElementById('categoryInput').value;
+    let productInput = document.getElementById('productInput').value;
+    let quantityInput = parseInt(document.getElementById('quantityInput').value);
+    
+    let category = inventory.find(cat => cat.category === categoryInput); // important
+    // see if this code is being used
+    if (!category) {
+        category = {category: categoryInput, products: []};
+        inventory.push(category);
+    }
+
+    let product = category.products.find(prod => prod.product === productInput);
+    if (product) {
+        product.quantity += quantityInput;
+    } else {
+        // not sure if this line does anything currently
+        category.products.push({product: productInput, quantity: quantityInput});
+    }
+
+    let shipCategory = shipment.find(cat => cat.category === categoryInput);
+    if (!shipCategory) {
+        shipCategory = {category: categoryInput, products: []}; // ?
+        shipment.push(shipCategory);
+    }
+
+    let shipProduct = shipCategory.products.find(prod => prod.product === productInput);
+    if (shipProduct) {
+        shipProduct.quantity += quantityInput;
+    } else {
+        shipCategory.products.push({product: productInput, quantity: quantityInput});
+    }
+
+    displayInventory();
+    displayShipment();
+}
+
+function displayShipment() {
+    let shipmentDisplay = document.getElementById('shipmentDisplay');
+    shipmentDisplay.innerHTML = '';
+    shipment.forEach(category => {
+        let categoryEl = document.createElement('div');
+        categoryEl.innerHTML = '<strong>' + category.category + '</strong>';
+        category.products.forEach(product => {
+            categoryEl.innerHTML += '<div>' + product.product + ': ' 
+                + product.quantity + '</div>';
+        });
+        shipmentDisplay.appendChild(categoryEl);
+    });
+}
+
+function addOrder() {
+    let categoryInput = document.getElementById('categoryInput').value;
+    let productInput = document.getElementById('productInput').value;
+    let quantityInput = parseInt(document.getElementById('quantityInput').value);
+
+    let category = inventory.find(cat => cat.category === categoryInput);
+    if (!category) {
+        category = {category: categoryInput, products: []};
+    }
+
+    let product = category.products.find(prod => prod.product === productInput);
+    if (product) {
+        product.quantity -= quantityInput;
+    } else {
+        category.products.push({product: productInput, quantity: -quantitInput});
+    }
+
+    let orderCategory = order.find(cat => cat.category === categoryInput);
+    if (!orderCategory) {
+        orderCategory = {category: categoryInput, products: []};
+        order.push(orderCategory);
+    }
+
+    let orderProduct = orderCategory.products.find(prod => prod.product === productInput);
+    if (orderProduct) {
+        orderProduct.quantity += quantityInput;
+    } else {
+        orderCategory.products.push({product: productInput, quantity: quantityInput});
+    }
+
+    displayInventory();
+    displayOrder();
+}
+
+function displayOrder() {
+    let orderDisplay = document.getElementById('orderDisplay');
+    orderDisplay.innerHTML = '';
+    order.forEach(category => {
+        let categoryEl = document.createElement('div');
+        category.products.forEach(product => {
+            categoryEl.innerHTML += '<div>' + product.product + ': ' + product.quantity + '</div>';
+        });
+        orderDisplay.appendChild(categoryEl);
+    });
+}
+
 displayInventory();
 createCategories();
 createProducts();
